@@ -1,8 +1,14 @@
 import imageio
 from datetime import datetime
 import numpy as np
-from matplotlib import pyplot as plt
 import matplotlib
+import platform
+if platform.system() == 'Darwin':  # macOS
+    matplotlib.use('macosx')
+else:
+    matplotlib.use('TkAgg')
+
+from matplotlib import pyplot as plt
 
 
 class Visualizer:

@@ -37,16 +37,17 @@ class BuildingBlocks2D(object):
         Compute the 2D position (x,y) of each one of the links (including end-effector) and return.
         @param given_config Given configuration.
         '''
-        res = np.zeros(4, 2)
-        angle = 0
+        res = np.zeros((4, 2))
         curr_x = 0
         curr_y = 0
-        for i in range(1, len(given_config)):
-            angle = self.compute_link_angle(angle, given_config)
-            curr_x += np.cos(angle)*self.links[i]
-            curr_y += np.sin(angle)*self.links[i]
-            res[i][0] = curr_x
-            res[i][0] = curr_y
+        angle = given_config[0]  
+        res[0] = [curr_x, curr_y]
+        for i in range(len(self.links)-1):
+            curr_x += self.links[i] * np.cos(angle)
+            curr_y += self.links[i] * np.sin(angle)
+            res[i+1] = [curr_x, curr_y]
+            if i < len(given_config) - 1:
+                angle = self.compute_link_angle(angle, given_config[i+1])
         return res
 
     def compute_ee_angle(self, given_config):
@@ -81,17 +82,17 @@ class BuildingBlocks2D(object):
         # TODO: HW2 4.2.3
         lines = []
         for i in range(1, len(robot_positions)):
-            lines.append(LineString(robot_positions[i], robot_positions[i-1]))
+            lines.append(LineString([robot_positions[i], robot_positions[i-1]]))
         for i in range(len(lines)):
-            for j in range(len(lines)):
-                intersection = lines[1].intersection(lines[j])
-                if not intersection.is_empty and i != j:
-                    if intersection.type == 'Point' and intersection in robot_positions:
+            for j in range(i + 1, len(lines)):
+                intersection = lines[i].intersection(lines[j])
+                if not intersection.is_empty:
+                    if intersection.geom_type == 'Point' and any(np.allclose(np.array(intersection.coords[0]), pos) for pos in robot_positions):
                         continue
                     else:
                         return False
         return True
-    # TODO may need to use something other than intersects
+    
 
     def config_validity_checker(self, config):
         '''

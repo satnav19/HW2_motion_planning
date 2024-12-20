@@ -1,0 +1,6 @@
+numpy
+matplotlib
+Shapely
+networkx
+scipy
+imageio

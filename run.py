@@ -36,7 +36,14 @@ def run_prm():
     visualizer = Visualizer(bb)
     prm = PRMController(conf1, conf2, bb)
 
-    plan = [] # TODO: HW2 4.3.5
+    plan = prm.run_PRM(num_coords=100, k=5)
+    
+    if plan is not None and len(plan) > 0:
+        print("Plan found!")
+        print("Path cost:", bb.compute_path_cost(plan))
+        visualizer.visualize_plan_as_gif(plan)
+    else:
+        print("No valid plan found!")
 
     print(bb.compute_path_cost(plan))
     visualizer.visualize_plan_as_gif(plan)
@@ -79,7 +86,7 @@ def run_3d():
     visualizer.show_conf(conf1)
 
 if __name__ == "__main__":
-    run_2d()
-    # run_prm()
+    #run_2d()
+    run_prm()
     # run_3d()
     # generate_graph()

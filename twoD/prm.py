@@ -6,7 +6,7 @@ import networkx as nx
 from scipy.spatial import KDTree
 import math
 import matplotlib.pyplot as plt
-from building_blocks import BuildingBlocks2D
+from .building_blocks import BuildingBlocks2D
 
 class PRMController:
     def __init__(self, start, goal, bb):
@@ -14,7 +14,6 @@ class PRMController:
         self.bb = bb
         self.start = start
         self.goal = goal
-        self.robot = BuildingBlocks2D()
         self.coordinates_history = []
         self.kdtree = None
         # Feel free to add class variables as you wish
@@ -56,7 +55,7 @@ class PRMController:
         configs = []
         while num < n:
             config = np.random.uniform(low = -np.pi, high = np.pi , size= 4 )
-            if self.robot.config_validity_checker(config):
+            if self.bb.config_validity_checker(config):
                 num += 1
             configs.append(config)
         return configs
@@ -78,8 +77,8 @@ class PRMController:
         for config in configs:
             neighbors = self.find_nearest_neighbour(config, k)
             for neighbor in neighbors:
-                distance = self.robot.compute_distance(config, neighbor)
-                if self.robot.edge_validity_checker(config, neighbor):
+                distance = self.bb.compute_distance(config, neighbor)
+                if self.bb.edge_validity_checker(config, neighbor):
                     self.graph.add_edge(tuple(config), tuple(neighbor), 
                                       weight=distance)
 
