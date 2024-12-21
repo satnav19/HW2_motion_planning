@@ -41,11 +41,11 @@ class BuildingBlocks2D(object):
         curr_x = 0
         curr_y = 0
         angle = given_config[0]
-        res[0] = [curr_x, curr_y]
-        for i in range(len(self.links)-1):
+        #res[0] = [curr_x, curr_y]
+        for i in range(len(self.links)):
             curr_x += self.links[i] * np.cos(angle)
             curr_y += self.links[i] * np.sin(angle)
-            res[i+1] = [curr_x, curr_y]
+            res[i] = [curr_x, curr_y]
             if i < len(given_config) - 1:
                 angle = self.compute_link_angle(angle, given_config[i+1])
         return res
@@ -107,9 +107,8 @@ class BuildingBlocks2D(object):
 
         # add position of robot placement ([0,0] - position of the first joint)
 
-        # TODO : the line below was not written by us, but we already added 0,0 so not needed
 
-        #robot_positions = np.concatenate([np.zeros((1, 2)), robot_positions])
+        robot_positions = np.concatenate([np.zeros((1, 2)), robot_positions])
 
         # verify that the robot do not collide with itself
         if not self.validate_robot(robot_positions=robot_positions):
@@ -170,9 +169,8 @@ class BuildingBlocks2D(object):
                         return False
 
             # add position of robot placement ([0,0] - position of the first joint)
-            # the line below adds 0,0 but not needed, was not written by us
-            #configs_positions = np.concatenate(
-            #    [np.zeros((len(configs_positions), 1, 2)), configs_positions], axis=1)
+            configs_positions = np.concatenate(
+                [np.zeros((len(configs_positions), 1, 2)), configs_positions], axis=1)
 
             # verify that the robot do not collide with itself during motion
             for config_positions in configs_positions:
