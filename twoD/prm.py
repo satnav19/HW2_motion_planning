@@ -33,7 +33,7 @@ class PRMController:
         self.add_to_graph(configs, k)
 
         # Planning part
-        path, distance = self.shortest_path()
+        path = self.shortest_path()
         if path is None:
             print("No path found between start and goal configurations")
             return None
