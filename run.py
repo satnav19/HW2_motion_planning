@@ -1,5 +1,4 @@
 import math
-
 import numpy as np
 from twoD.environment import MapEnvironment
 from twoD.building_blocks import BuildingBlocks2D
@@ -12,7 +11,7 @@ from threeD.visualizer import Visualize_UR
 
 
 def run_2d():
-    conf = np.array([0.78, -0.78, 0.0, 0.0])
+    conf = np.array([0.78, 0.0, 0.0, 0.0])
 
     # prepare the map
     planning_env = MapEnvironment(json_file="./twoD/map_mp.json")
@@ -30,23 +29,19 @@ def run_prm():
     conf1 = np.array([0.78, -0.78, 0.0, 0.0])
     conf2 = np.array([0.8, -0.8, 0.8, 0.5])
     #conf2 = np.array([0.8, 0.8, 0.3, 0.5])
-
     planning_env = MapEnvironment(json_file="./twoD/map_mp.json")
     bb = BuildingBlocks2D(planning_env)
     visualizer = Visualizer(bb)
     prm = PRMController(conf1, conf2, bb)
 
     plan = prm.run_PRM(num_coords=100, k=5)
-    
     if plan is not None and len(plan) > 0:
+        final_plan = np.array([np.array(config) for config in plan])
         print("Plan found!")
-        print("Path cost:", bb.compute_path_cost(plan))
+        print("Path cost:", bb.compute_path_cost(final_plan))
         visualizer.visualize_plan_as_gif(plan)
     else:
         print("No valid plan found!")
-
-    print(bb.compute_path_cost(plan))
-    visualizer.visualize_plan_as_gif(plan)
 
 
 def generate_graph():
@@ -55,20 +50,25 @@ def generate_graph():
     planning_env = MapEnvironment(json_file="./twoD/map_mp.json")
     bb = BuildingBlocks2D(planning_env)
     prm = PRMController(conf1, conf2, bb)
-    prm.create_graph()
-
-
+    costs, runtimes = prm.create_graph(base_number=100, 
+                                     how_many_to_add=100, 
+                                     num_searches=7)
+    
+    prm.plot_results(costs, runtimes, 
+                    base_number=100, 
+                    how_many_to_add=100, 
+                    num_searches=7)
 
 def run_3d():
     ur_params = UR5e_PARAMS(inflation_factor=1)
     transform = Transform(ur_params)
 
+    env = Environment(env_idx=1)
+
     bb = BuildingBlocks3D(transform=transform,
                           ur_params=ur_params,
                           resolution=0.1,
-                          p_bias=0.05, )
-
-    env = Environment(env_idx=1, bb=bb)
+                          p_bias=0.05, env=env)
 
     visualizer = Visualize_UR(ur_params, env=env, transform=transform, bb=bb)
 
@@ -87,6 +87,6 @@ def run_3d():
 
 if __name__ == "__main__":
     #run_2d()
-    run_prm()
+    #run_prm()
     # run_3d()
-    # generate_graph()
+    generate_graph()

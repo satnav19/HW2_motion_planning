@@ -81,19 +81,26 @@ class BuildingBlocks2D(object):
         '''
         # TODO: HW2 4.2.3
         lines = []
-        for i in range(len(robot_positions)):
-            lines.append(LineString(
-                [robot_positions[i], robot_positions[i-1]]))
+        robot_positions = np.concatenate([np.zeros((1, 2)), robot_positions])
+        for i in range(1,len(robot_positions)):
+            lines.append(LineString([robot_positions[i], robot_positions[i-1]]))
+            
         for i in range(len(lines)):
             for j in range(i + 1, len(lines)):
-                intersection = lines[i].intersection(lines[j])
-                if not intersection.is_empty:
-                    if intersection.geom_type == 'Point' and \
-                        any(np.allclose(np.array(intersection.coords[0]), pos)
-                            for pos in robot_positions):
-                        continue
-                    else:
-                        return False
+                if (lines[i].crosses(lines[j]) or 
+                    lines[i].overlaps(lines[j]) or
+                    lines[i].contains(lines[j]) or 
+                    lines[j].contains(lines[i])):
+                    return False
+            
+                # intersection = lines[i].intersection(lines[j])
+                # if not intersection.is_empty:
+                #     if intersection.geom_type == 'Point' and \
+                #         any(np.allclose(np.array(intersection.coords[0]), pos)
+                #             for pos in robot_positions):
+                #         continue
+                #     else:
+                #         return False
         return True
 
     def config_validity_checker(self, config):
@@ -106,8 +113,6 @@ class BuildingBlocks2D(object):
         robot_positions = self.compute_forward_kinematics(given_config=config)
 
         # add position of robot placement ([0,0] - position of the first joint)
-
-
         robot_positions = np.concatenate([np.zeros((1, 2)), robot_positions])
 
         # verify that the robot do not collide with itself
