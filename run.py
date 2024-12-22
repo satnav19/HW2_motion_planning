@@ -87,6 +87,6 @@ def run_3d():
 
 if __name__ == "__main__":
     #run_2d()
-    #run_prm()
+    run_prm()
     # run_3d()
-    generate_graph()
+#generate_graph()

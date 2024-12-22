@@ -146,7 +146,6 @@ class Visualizer:
         # interpolate plan and get inspected points
         plan = self.interpolate_plan(plan_configs=plan)
 
-        # visualize each step of the given plan
         plan_images = []
         for i in range(len(plan)):
             # create background, obstacles, start
@@ -154,19 +153,13 @@ class Visualizer:
             plt = self.visualize_obstacles(plt=plt)
             plt = self.visualize_point_location(plt=plt, config=plan[0], color='r')
 
-            # add goal or inspection points
-            plt = self.visualize_point_location(plt=plt, config=plan[-1], color='g')
-
-            # add robot with current plan step
             plt = self.visualize_robot(plt=plt, config=plan[i])
-
-            # convert plot to image
             canvas = plt.gca().figure.canvas
             canvas.draw()
-            data = np.fromstring(canvas.tostring_rgb(), dtype=np.uint8, sep='')
-            data = data.reshape(canvas.get_width_height()[::-1] + (3,))
+            data = np.fromstring(canvas.tostring_argb(), dtype=np.uint8, sep='')
+            data = data.reshape(480,640,4)
             plan_images.append(data)
 
         # store gif
         plan_time = datetime.now().strftime("%d-%m-%Y_%H-%M-%S")
-        imageio.mimsave(f'plan_{plan_time}.gif', plan_images, 'GIF', duration=0.05)
+        imageio.mimsave(f'plan_{plan_time}.gif', plan_images ,'GIF', duration=0.05)
