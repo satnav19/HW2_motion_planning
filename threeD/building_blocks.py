@@ -34,15 +34,20 @@ class BuildingBlocks3D(object):
         @param goal_conf - the goal configuration
         """
         # TODO: HW2 5.2.1
-        pass
-
+        to_bias = np.random.uniform(low = 0, high = 1)
+        if to_bias <= self.p_bias:
+            return goal_conf
+        config = []
+        for joint_limit in self.ur_params.mechamical_limits.values():
+            config.append(np.random.uniform(low = joint_limit[0], high = joint_limit[1]))
+        return config
     def is_in_collision(self, conf) -> bool:
         """check for collision in given configuration, arm-arm and arm-obstacle
         return True if in collision
         @param conf - some configuration
         """
         # TODO: HW2 5.2.2
-        pass
+        
 
 
     def local_planner(self, prev_conf, current_conf) -> bool:
