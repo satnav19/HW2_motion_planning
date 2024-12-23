@@ -1,8 +1,8 @@
 import numpy as np
-from . import kinematics
+import kinematics
 import shapely
 import math
-from threeD.environment import Environment
+from environment import Environment
 class BuildingBlocks3D(object):
     '''
     @param resolution determines the resolution of the local planner(how many intermidiate configurations to check)
@@ -54,6 +54,19 @@ class BuildingBlocks3D(object):
         # TODO: HW2 5.2.2
         coords = self.transform.conf2sphere_coords(conf)
         radii = self.ur_params.sphere_radius
+        obstacle_rad = self.env.radius
+        for joint,values in coords.items():
+            for center in values:
+                if center[0] !=0 and center[1] != 0 and center[2] < radii[joint]:
+                    #print(f'{joint} hit floor at {center}, dist should be more than {radii[joint]}')
+                    return True
+                for obstacle in self.env.obstacles:
+                    obstacle_dist = np.sqrt(np.sum((center - obstacle)**2))
+                    rad_sum = radii[joint] + obstacle_rad
+                    if  obstacle_dist < rad_sum:
+                        #print(f'{joint} is {coords[joint]} ')
+                        #print(f'center is {center} , obstacle is {obstacle} , distance is {obstacle_dist} , should be more than {rad_sum}')
+                        return True
         for collision in self.possible_link_collisions:
             joint1 = collision[0]
             joint2 = collision[1]
@@ -64,31 +77,12 @@ class BuildingBlocks3D(object):
                 for j in range(i+1,len(joint2_centers)):
                     center1 = joint1_centers[i]
                     center2 = joint2_centers[j]
-                    if center1[0] !=0 and center1[1] != 0 and np.abs(center1[2]) < radii[joint1]:
-                        print(f'{joint1} hit floor at {center1}, dist should be more than {radii[joint1]}')
-                        return True
-                    if center2[0] !=0 and center2[1] != 0 and np.abs(center2[2]) < radii[joint2]:
-                        print(f'{joint2} hit floor at {center2}, dist should be more than {radii[joint2]}')
-                        return True
                     actual_distance = np.sqrt(np.sum((center1 - center2)**2))
                     if  actual_distance < rad_sum:
-                        print(f'{joint1} is {joint1_centers} and {joint2} is {joint2_centers}')
-                        print(f'center 1 is {center1} , center2 is {center2} , distance is {actual_distance} , should be more than {rad_sum}')
+                        #print(f'{joint1} is {joint1_centers} and {joint2} is {joint2_centers}')
+                        #print(f'center 1 is {center1} , center2 is {center2} , distance is {actual_distance} , should be more than {rad_sum}')
                         return True
-                    obstacle_rad = self.env.radius
-                    for obstacle in self.env.obstacles:
-                        obstacle_dist1 = np.sqrt(np.sum((center1 - obstacle)**2))
-                        obstacle_dist2 = np.sqrt(np.sum((center2 - obstacle)**2))
-                        rad_sum1 = radii[joint1] + obstacle_rad
-                        rad_sum2 = radii[joint2] + obstacle_rad
-                        if  obstacle_dist1 < rad_sum1:
-                            print(f'{joint1} is {joint1_centers} ')
-                            print(f'center 1 is {center1} , obstacle is {obstacle} , distance is {obstacle_dist1} , should be more than {rad_sum1}')
-                            return True
-                        if  obstacle_dist2 < rad_sum2:
-                            print(f'{joint2} is {joint2_centers} ')
-                            print(f'center 2 is {center2} , obstacle is {obstacle} , distance is {obstacle_dist2} , should be more than {rad_sum2}')
-                            return True        
+                            
         return False
     
     
@@ -98,10 +92,26 @@ class BuildingBlocks3D(object):
         @param prev_conf - some configuration
         @param current_conf - current configuration
         '''
+        
         # TODO: HW2 5.2.4
-        pass
+        if self.is_in_collision(current_conf) :
+            print('current conf in collision')
+            return False
+        if self.is_in_collision(prev_conf):
+            print('prev conf in collision')
+            return False
+        res = self.resolution
+        num_steps = max(3,int(self.edge_cost(prev_conf, current_conf)/res))
+        print(f'resolution is {res} , and num steps is {num_steps}')
+        for i in range(num_steps):
+            t = i/ (num_steps -1)
 
-
+            temp_conf = [prev_conf[j] + t * (current_conf[j] - prev_conf[j]) for j in range(len(prev_conf))]
+            if self.is_in_collision(temp_conf):
+                print(f'failed at step {i}')
+                return False
+        print('transition approved!')
+        return True
     def edge_cost(self, conf1, conf2):
         '''
         Returns the Edge cost- the cost of transition from configuration 1 to configuration 2

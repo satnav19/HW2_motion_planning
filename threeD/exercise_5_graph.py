@@ -10,16 +10,25 @@ def main():
     inflation_factors = np.linspace(1.0, 1.8, 9)
     times = []
     is_collision_instances = []
-    for inflation_factor in inflation_factors:
+    for i, inflation_factor in enumerate(inflation_factors):
+        times.append(0)
+        is_collision_instances.append(0)
         ur_params = UR5e_PARAMS(inflation_factor=inflation_factor)
         env = Environment(env_idx=0)
         transform = Transform(ur_params)
         bb = BuildingBlocks3D(transform=transform, ur_params=ur_params, env=env, resolution=0.1, p_bias=0.03)
         # change the path
-        random_samples = np.load('./random_samples/random_samples_100k.npy')
-
+        random_samples = np.load('C:/Users/boi/HW2_motion_planning/threeD/random_samples_100k.npy')
+        for sample in random_samples:
+            start = time.time()
+            res = bb.is_in_collision(sample)
+            end = time.time()
+            delta = start - end
+            times[i] += delta
+            if res:
+                is_collision_instances[i]+=1 
         # TODO: HW2 5.2.5
-        pass
+        
 
 
     fig = plt.figure()
