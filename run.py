@@ -7,6 +7,7 @@ from twoD.visualizer import Visualizer
 from threeD.environment import Environment
 from threeD.kinematics import UR5e_PARAMS, Transform
 from threeD.building_blocks import BuildingBlocks3D
+
 from threeD.visualizer import Visualize_UR
 
 
@@ -78,24 +79,21 @@ def run_3d():
     conf2 = np.array([-0.694, -1.376, -2.212, -1.122, 1.570, -2.26])
 
     # ---------------------------------------
-    #
     last_conf1 = np.deg2rad([80, -72, 101, -120, -90, -10])
     last_conf2 = np.deg2rad([20, -90, 90, -90, -90, -10])
-    #
+
     # collision checking examples
     #sample = bb.sample(conf2)
     #print(f'sample is {sample}')
     #sample = [-0.694, -1.376, -2.212, -1.122, 1.570, -2.26]
     #res = bb.is_in_collision(conf=sample)
-    res_values = [0.05,0.1,0.15,0.2,0.25,0.3]
+    res_values = [0.1,0.2,0.3]
     for i in res_values:
         bb.resolution = i
         res = bb.local_planner(prev_conf=last_conf1 ,current_conf=last_conf2)
-    #visualizer.show_conf(last_conf1)
-    #visualizer.show_conf(last_conf2)
 
 if __name__ == "__main__":
     #run_2d()
     #run_prm()
-    run_3d()
-    #generate_graph()
+    # run_3d()
+    generate_graph()

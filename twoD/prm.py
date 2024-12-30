@@ -213,44 +213,44 @@ class PRMController:
                     
         return None
 
-def plot_results(self, costs, runtimes, base_number=100, how_many_to_add=100, num_searches=7):
-    """
-    Plot the results of the PRM analysis.
-    
-    Args:
-        costs (dict): Dictionary mapping k values to lists of path costs
-        runtimes (dict): Dictionary mapping k values to lists of runtimes
-        base_number (int): Starting number of nodes
-        how_many_to_add (int): Number of nodes added in each iteration
-        num_searches (int): Number of different n values tested
-    """
-    import matplotlib.pyplot as plt
-    
-    # Generate x-axis values (number of nodes)
-    n_values = [base_number + i * how_many_to_add for i in range(num_searches)]
-    
-    # Plot path costs
-    plt.figure(figsize=(10, 5))
-    for k_name in costs.keys():
-        plt.plot(n_values, costs[k_name], marker='o', label=f'k = {k_name}')
-    
-    plt.xlabel('Number of nodes (n)')
-    plt.ylabel('Path Cost')
-    plt.title('PRM Path Cost vs Number of Nodes')
-    plt.legend()
-    plt.grid(True)
-    plt.savefig('path_costs.png')
-    plt.close()
-    
-    # Plot runtimes
-    plt.figure(figsize=(10, 5))
-    for k_name in runtimes.keys():
-        plt.plot(n_values, runtimes[k_name], marker='o', label=f'k = {k_name}')
-    
-    plt.xlabel('Number of nodes (n)')
-    plt.ylabel('Runtime (seconds)')
-    plt.title('PRM Runtime vs Number of Nodes')
-    plt.legend()
-    plt.grid(True)
-    plt.savefig('runtimes.png')
-    plt.close()
+    def plot_results(self, costs, runtimes, base_number=100, how_many_to_add=100, num_searches=7):
+        """
+        Plot the results of the PRM analysis.
+        
+        Args:
+            costs (dict): Dictionary mapping k values to lists of path costs
+            runtimes (dict): Dictionary mapping k values to lists of runtimes
+            base_number (int): Starting number of nodes
+            how_many_to_add (int): Number of nodes added in each iteration
+            num_searches (int): Number of different n values tested
+        """
+        import matplotlib.pyplot as plt
+        
+        # Generate x-axis values (number of nodes)
+        n_values = [base_number + i * how_many_to_add for i in range(num_searches)]
+        
+        # Plot path costs
+        plt.figure(figsize=(10, 5))
+        for k_name in costs.keys():
+            plt.plot(n_values, costs[k_name], marker='o', label=f'k = {k_name}')
+        
+        plt.xlabel('Number of nodes (n)')
+        plt.ylabel('Path Cost')
+        plt.title('PRM Path Cost vs Number of Nodes')
+        plt.legend()
+        plt.grid(True)
+        plt.savefig('path_costs.png')
+        plt.close()
+        
+        # Plot runtimes
+        plt.figure(figsize=(10, 5))
+        for k_name in runtimes.keys():
+            plt.plot(n_values, runtimes[k_name], marker='o', label=f'k = {k_name}')
+        
+        plt.xlabel('Number of nodes (n)')
+        plt.ylabel('Runtime (seconds)')
+        plt.title('PRM Runtime vs Number of Nodes')
+        plt.legend()
+        plt.grid(True)
+        plt.savefig('runtimes.png')
+        plt.close()
